@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import SideBar from "@/app/components/sideBar";
+import MobileTopNav from "@/app/components/mobileTopNav"; // ✅ ADD
 import Link from "next/link";
 import { updateProduct } from "@/lib/actions/products";
 
@@ -18,9 +19,14 @@ export default async function EditProductPage({ params }: Props) {
     return (
       <div className="min-h-screen bg-base-200">
         <SideBar currentPath="/inventory" />
-        <main className="ml-64 p-8">
+        <MobileTopNav currentPath="/inventory" /> {/* ✅ ADD */}
+        {/* ✅ responsive main */}
+        <main className="p-4 md:ml-64 md:p-8">
           <h1 className="text-2xl font-bold">Product not found</h1>
-          <Link className="btn btn-primary mt-4" href="/inventory">
+          <Link
+            className="btn btn-primary mt-4 w-full sm:w-auto"
+            href="/inventory"
+          >
             Back to Inventory
           </Link>
         </main>
@@ -31,16 +37,20 @@ export default async function EditProductPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-base-200">
       <SideBar currentPath="/inventory" />
-      <main className="ml-64 p-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+      <MobileTopNav currentPath="/inventory" /> {/* ✅ ADD */}
+      {/* ✅ responsive main */}
+      <main className="p-4 md:ml-64 md:p-8">
+        <div className="mb-6">
+          {/* ✅ stack header on mobile */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <h1 className="text-2xl font-bold">Edit Product</h1>
               <p className="text-sm opacity-70">
                 Update fields and save changes.
               </p>
             </div>
-            <Link href="/inventory" className="btn btn-ghost">
+
+            <Link href="/inventory" className="btn btn-ghost w-full sm:w-auto">
               Back
             </Link>
           </div>
@@ -50,9 +60,10 @@ export default async function EditProductPage({ params }: Props) {
           <div className="card-body">
             <form
               action={updateProduct.bind(null, product.id)}
-              className="space-y-4 spaxce-x-4"
+              className="space-y-4"
             >
-              <div className="grid md:grid-cols-2 gap-4">
+              {/* ✅ already responsive (1 col mobile, 2 col md+) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label className="form-control">
                   <div className="label pr-2">
                     <span className="label-text">Name</span>
@@ -60,7 +71,7 @@ export default async function EditProductPage({ params }: Props) {
                   <input
                     name="name"
                     defaultValue={product.name}
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     required
                   />
                 </label>
@@ -72,7 +83,7 @@ export default async function EditProductPage({ params }: Props) {
                   <input
                     name="sku"
                     defaultValue={product.sku ?? ""}
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                   />
                 </label>
 
@@ -85,7 +96,7 @@ export default async function EditProductPage({ params }: Props) {
                     step="0.01"
                     name="price"
                     defaultValue={product.price.toString()}
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     required
                   />
                 </label>
@@ -98,7 +109,7 @@ export default async function EditProductPage({ params }: Props) {
                     type="number"
                     name="quantity"
                     defaultValue={product.quantity}
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     min={0}
                     required
                   />
@@ -112,17 +123,24 @@ export default async function EditProductPage({ params }: Props) {
                     type="number"
                     name="lowStockAt"
                     defaultValue={product.loStock ?? ""}
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     min={0}
                   />
                 </label>
               </div>
 
-              <div className="flex gap-2">
-                <button type="submit" className="btn btn-primary btn-soft">
+              {/* ✅ wrap + full width buttons on mobile */}
+              <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-soft w-full sm:w-auto"
+                >
                   Save changes
                 </button>
-                <Link href="/inventory" className="btn btn-ghost">
+                <Link
+                  href="/inventory"
+                  className="btn btn-ghost w-full sm:w-auto"
+                >
                   Cancel
                 </Link>
               </div>

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import Link from "next/link";
 import SideBar from "../components/sideBar";
+import MobileTopNav from "../components/mobileTopNav"; // ✅ ADD
 import type { Prisma, Activity as ActivityRow } from "@prisma/client";
 
 type SearchParams = Promise<{
@@ -36,13 +37,7 @@ export default async function ActivityPage({
 }) {
   const user = await getCurrentUser();
   const userId = user.id;
-  const {
-    action,
-    q,
-    cursorId,
-    dir,
-    anchorId: anchorIdParam,
-  } = await searchParams;
+  const { action, q, cursorId, dir } = await searchParams;
   const direction = dir === "prev" ? "prev" : "next";
 
   // Base filter (server side)
@@ -60,8 +55,6 @@ export default async function ActivityPage({
     select: { id: true, action: true, meta: true, createdAt: true },
   });
 
-  // Simple client-side filter on q across meta.name/meta.sku
-
   const normalized = dir === "prev" ? [...records].reverse() : records;
   const hasMoreInFetchDir = normalized.length > PAGE_SIZE;
   const page = normalized.slice(0, PAGE_SIZE);
@@ -75,45 +68,55 @@ export default async function ActivityPage({
   return (
     <div className="min-h-screen bg-base-200">
       <SideBar currentPath="/activity" />
-      <main className="ml-64 p-8">
-        <div className="flex items-center justify-between mb-6">
+      <MobileTopNav currentPath="/activity" /> {/* ✅ ADD */}
+      {/* ✅ responsive main */}
+      <main className="p-4 md:ml-64 md:p-8">
+        {/* ✅ responsive header row */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold">Activity</h1>
             <p className="text-sm opacity-70">
               Auditing for creates, updates, and deletes.
             </p>
           </div>
-          <div className="flex gap-2">
-            <form className="join">
+
+          {/* ✅ stack controls on mobile */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+            <form className="join w-full sm:w-auto flex flex-col sm:flex-row">
               <input
                 name="q"
                 defaultValue={q ?? ""}
                 placeholder="Search name/SKU…"
-                className="input input-sm input-bordered join-item"
+                className="input input-sm input-bordered join-item w-full sm:w-48"
               />
               <select
                 name="action"
                 defaultValue={action ?? ""}
-                className="select select-sm select-bordered join-item"
+                className="select select-sm select-bordered join-item w-full sm:w-44"
               >
                 <option value="">All actions</option>
                 <option value="CREATE_PRODUCT">Create</option>
                 <option value="UPDATE_PRODUCT">Update</option>
                 <option value="DELETE_PRODUCT">Delete</option>
               </select>
-              <button className="btn btn-sm btn-primary btn-soft join-item">
+              <button className="btn btn-sm btn-primary btn-soft join-item w-full sm:w-auto">
                 Filter
               </button>
             </form>
-            <Link href="/inventory" className="btn btn-sm btn-neutral btn-soft">
+
+            <Link
+              href="/inventory"
+              className="btn btn-sm btn-neutral btn-soft w-full sm:w-auto"
+            >
               Back to Inventory
             </Link>
           </div>
         </div>
 
         <div className="card bg-base-100 shadow">
+          {/* ✅ horizontal scroll for table on mobile */}
           <div className="card-body overflow-x-auto">
-            <table className="table table-zebra">
+            <table className="table table-zebra min-w-[700px]">
               <thead>
                 <tr>
                   <th className="w-40">When</th>
@@ -131,9 +134,7 @@ export default async function ActivityPage({
                         {r.createdAt.toLocaleString()}
                       </td>
                       <td className="align-top">
-                        <span className={`badge`}>
-                          {formatAction(r.action)}
-                        </span>
+                        <span className="badge">{formatAction(r.action)}</span>
                       </td>
                       <td className="align-top">
                         <div className="font-medium">{meta?.name ?? "—"}</div>
@@ -164,7 +165,8 @@ export default async function ActivityPage({
               </tbody>
             </table>
 
-            <div className="mt-4 flex justify-between">
+            {/* ✅ responsive pagination */}
+            <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-between">
               {/* Previous */}
               {canPrev && prevCursorId ? (
                 <Link
@@ -177,12 +179,14 @@ export default async function ActivityPage({
                       dir: "prev",
                     },
                   }}
-                  className="btn btn-sm"
+                  className="btn btn-sm w-full sm:w-auto"
                 >
                   ← Previous
                 </Link>
               ) : (
-                <span className="btn btn-sm btn-disabled">← Previous</span>
+                <span className="btn btn-sm btn-disabled w-full sm:w-auto">
+                  ← Previous
+                </span>
               )}
 
               {/* Next */}
@@ -197,12 +201,14 @@ export default async function ActivityPage({
                       dir: "next",
                     },
                   }}
-                  className="btn btn-sm"
+                  className="btn btn-sm w-full sm:w-auto"
                 >
                   Next →
                 </Link>
               ) : (
-                <span className="btn btn-sm btn-disabled">Next →</span>
+                <span className="btn btn-sm btn-disabled w-full sm:w-auto">
+                  Next →
+                </span>
               )}
             </div>
           </div>

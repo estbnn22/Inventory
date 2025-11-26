@@ -1,3 +1,4 @@
+// app/components/sideBar.tsx
 import { UserButton } from "@stackframe/stack";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,10 +42,9 @@ export default function SideBar({
   ];
 
   return (
-    <div className="fixed left-0 top-0 bg-neutral text-white w-64 min-h-screen p-6 z-10">
+    <div className="hidden md:block fixed left-0 top-0 bg-neutral text-white w-64 min-h-screen p-6 z-10">
       <div className="mb-8">
         <div className="flex items-center space-x-2 mb-4">
-          {" "}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-8 w-8"
@@ -62,10 +62,12 @@ export default function SideBar({
           <span className="text-lg font-semibold">Inventory App</span>
         </div>
       </div>
+
       <nav className="space-y-1">
         <div className="text-sm font-semibold uppercase text-secondary">
           Inventory
         </div>
+
         {navigation.map((item, key) => {
           const isActive = currentPath === item.href;
 
@@ -73,7 +75,7 @@ export default function SideBar({
             <Link
               href={item.href}
               key={key}
-              className={`flex items-center space-x-3  py-2 rounded-lg ${
+              className={`flex items-center space-x-3 py-2 rounded-lg ${
                 isActive
                   ? "bg-primary text-white px-3"
                   : "hover:bg-secondary hover:text-white px-3 text-secondary"

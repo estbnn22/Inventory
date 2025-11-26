@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import SideBar from "../components/sideBar";
+import MobileTopNav from "../components/mobileTopNav"; // ✅ ADD
 import { getCurrentUser } from "@/lib/auth";
 import ProductsChart from "../components/productsChart";
 import Link from "next/link";
@@ -92,14 +93,14 @@ export default async function DashboardPage() {
     weeklyProductsData.push({ week: weekLabel, products: weekProducts.length });
   }
 
-  // ------ KEEP your recent products (used for Stock Levels card) ------
+  // ------ Stock Levels card ------
   const recentProducts = await prisma.product.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
     take: 6,
   });
 
-  // ------ NEW: separate query for recent activity ------
+  // ------ Recent Activity ------
   const recentActivity = await prisma.activity.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -110,10 +111,15 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-base-200">
       <SideBar currentPath="/dashboard" />
-      <main className="ml-64 p-8">
-        {/* Header  */}
+
+      {/* ✅ Mobile-only top nav */}
+      <MobileTopNav currentPath="/dashboard" />
+
+      {/* ✅ main full width on mobile, sidebar offset only on md+ */}
+      <main className="p-4 md:ml-64 md:p-8">
+        {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <h1 className="text-2xl font-bold">Dashboard</h1>
               <p className="text-md mt-2">
@@ -124,11 +130,14 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Top 2 cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Key Metrics  */}
+          {/* Key Metrics */}
           <div className="bg-white rounded-lg border border-primary p-6 hover:shadow-md">
             <h2 className="text-lg font-semibold mb-6">Key Metrics</h2>
-            <div className="grid grid-cols-3 gap-6">
+
+            {/* ✅ responsive metrics grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold">{totalProducts}</div>
                 <div className="text-sm">Total Products</div>
@@ -188,8 +197,9 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Bottom 4 cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Stock Levels (uses recentProducts) */}
+          {/* Stock Levels */}
           <div className="bg-white rounded-lg border border-primary p-6 hover:shadow-md">
             <div className="flex items-center justify-between mb-2">
               <h2 className="card-title text-base">Stock Levels</h2>
@@ -197,6 +207,7 @@ export default async function DashboardPage() {
                 View all
               </Link>
             </div>
+
             <div className="space-y-3">
               {recentProducts.map((product, key) => {
                 const stockLevel =
@@ -220,7 +231,7 @@ export default async function DashboardPage() {
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between p-3 rounded-lg "
+                    className="flex items-center justify-between p-3 rounded-lg"
                   >
                     <div className="flex items-center space-x-3">
                       <div
@@ -281,6 +292,7 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">Efficiency</h2>
             </div>
+
             <div className="flex items-center justify-center">
               <div className="relative w-48 h-48">
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -293,6 +305,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
             </div>
+
             <div className="mt-6 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-2">
@@ -300,12 +313,14 @@ export default async function DashboardPage() {
                   <span>In Stock ({inStockPercentage}%)</span>
                 </div>
               </div>
+
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 rounded-full bg-purple-200" />
                   <span>Less than 10 in Stock ({lowStockPercentage}%)</span>
                 </div>
               </div>
+
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 rounded-full bg-gray-200" />
@@ -315,7 +330,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Recent activity (uses recentActivity) */}
+          {/* Recent activity */}
           <div className="card bg-white hover:shadow-md border border-primary">
             <div className="card-body">
               <div className="flex items-center justify-between mb-2">
@@ -324,6 +339,7 @@ export default async function DashboardPage() {
                   View all
                 </a>
               </div>
+
               <ul className="space-y-2">
                 {recentActivity.map((r) => {
                   const meta = isActivityMeta(r.meta) ? r.meta : {};

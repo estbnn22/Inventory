@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import SideBar from "../components/sideBar";
+import MobileTopNav from "../components/mobileTopNav"; // ✅ ADD
 import Link from "next/link";
 import { createProduct } from "@/lib/actions/products";
 
@@ -9,9 +10,12 @@ export default async function AddProduct() {
   return (
     <div className="min-h-screen bg-base-200">
       <SideBar currentPath="/add-product" />
-      <main className="ml-64 p-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+      <MobileTopNav currentPath="/add-product" /> {/* ✅ ADD */}
+      {/* ✅ responsive main */}
+      <main className="p-4 md:ml-64 md:p-8">
+        <div className="mb-6">
+          {/* ✅ stack header on mobile */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <h1 className="text-2xl font-bold">Add Product</h1>
               <p className="text-sm mt-2">
@@ -21,7 +25,8 @@ export default async function AddProduct() {
           </div>
         </div>
 
-        <div className="max-w-2xl gap">
+        {/* ✅ responsive container */}
+        <div className="w-full max-w-2xl">
           <div className="bg-white rounded-lg border border-neutral p-6">
             <form action={createProduct} className="space-y-6">
               <div>
@@ -78,6 +83,7 @@ export default async function AddProduct() {
                   />
                 </div>
               </div>
+
               <div>
                 <label
                   htmlFor="sku"
@@ -89,11 +95,11 @@ export default async function AddProduct() {
                   type="text"
                   id="sku"
                   name="sku"
-                  min="0"
                   className="input w-full rounded-lg focus:border-transparent"
                   placeholder="Enter SKU..."
                 />
               </div>
+
               <div>
                 <label
                   htmlFor="lowStockAt"
@@ -111,11 +117,18 @@ export default async function AddProduct() {
                 />
               </div>
 
-              <div className="flex gap-5">
-                <button type="submit" className="btn btn-primary btn-soft">
+              {/* ✅ responsive button row */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-soft w-full sm:w-auto"
+                >
                   Add Product
                 </button>
-                <Link href="/inventory" className="btn btn-error btn-soft">
+                <Link
+                  href="/inventory"
+                  className="btn btn-error btn-soft w-full sm:w-auto"
+                >
                   Cancel
                 </Link>
               </div>
